@@ -660,7 +660,6 @@ input[type=range]{width:100%;accent-color:var(--blue2);margin:0}
 .bdg-ok{background:#d4f0db;color:#1a7c3a;padding:2px 9px;border-radius:12px;font-size:11px;font-weight:700}
 .bdg-wn{background:#fff3cd;color:#856404;padding:2px 9px;border-radius:12px;font-size:11px;font-weight:700}
 .bdg-err{background:#fde8e7;color:#c0392b;padding:2px 9px;border-radius:12px;font-size:11px;font-weight:700}
-
 /* info box */
 .info-box2{background:#fffbea;border:1px solid #f0d96a;border-radius:6px;padding:10px 14px;font-size:12px;color:#5a4800;margin:8px 0;line-height:1.6}
 /* upload zone */
@@ -734,7 +733,6 @@ user-select: none
     <button class="tab-btn" id="tab-btn-3" onclick="switchTab(3)">⚒ 强度计算</button>
     <button class="tab-btn" id="tab-btn-4" onclick="switchTab(4)">🔩 同步器设计</button>
     <button class="tab-btn" id="tab-btn-5" onclick="switchTab(5)">🏆 智能评分报告</button>
-
   </div>
   <div class="tb-right" style="display:flex;gap:8px;align-items:center">
     <button onclick="openTeacherLogin()" style="background:rgba(255,255,255,0.18);padding:6px 13px;border-radius:6px;cursor:pointer;font-size:.72rem;border:1px solid rgba(255,255,255,0.3);color:#f0e8d8;transition:all .2s" onmouseover="this.style.background='rgba(255,255,255,0.28)'" onmouseout="this.style.background='rgba(255,255,255,0.18)'">👨‍🏫 教师管理</button>
@@ -4068,7 +4066,7 @@ function syncParamNumbox(key, val, dispId, dp) {
 // ── 重置 ──
 function sync_resetDefaults() {
   var def = { f:0.10,alpha:7,R:50,r:20,b:5,beta:35,delta:10.5,F:120,ne:2500,Jt:0.035 };
-  Object.assign(P, def);
+  Object.assign(SP, def);
   var map = [['f','vf',2],['alpha','valpha',1],['R','vR',0],['b','vb',1],
              ['r','vr',0],['beta','vbeta',1],['delta','vdelta',1],['F','vF',0],['ne','vne',0],['Jt','vJt',3]];
   map.forEach(function(m) {
@@ -4140,7 +4138,7 @@ function sync_timeVerdict(t) {
 
 // ── 渲染 ──
 function sync_compute() {
-  var lk = calcLock(P);
+  var lk = calcLock(SP);
   var we = SP.ne*2*Math.PI/60;
   document.getElementById('vne_rad').textContent = we.toFixed(1);
 
@@ -4179,7 +4177,7 @@ function sync_compute() {
   // Lock sensitivity
   var fVals=[0.06,0.07,0.08,0.09,0.10,0.11,0.12,0.13,0.14,0.15], sr='';
   fVals.forEach(function(fv){
-    var r=calcLock(Object.assign({},P,{f:fv})), isCur=Math.abs(fv-SP.f)<0.001;
+    var r=calcLock(Object.assign({},SP,{f:fv})), isCur=Math.abs(fv-SP.f)<0.001;
     sr+='<tr><td class="'+(isCur?'cur':'')+'">'+(fv*100).toFixed(0)+'%</td>'
       +'<td class="'+(isCur?'cur':'')+'">'+ r.tanPhi.toFixed(4)+'</td>'
       +'<td class="'+(isCur?'cur':'')+'">'+ r.phi.toFixed(2)+'</td>'
@@ -4199,7 +4197,7 @@ function sync_compute() {
     +'<span>⑥</span><span>裕度 Δ = φ − β = '+lk.phi.toFixed(2)+' − '+SP.beta.toFixed(1)+'</span><span>= '+lk.margin.toFixed(2)+'°</span>';
 
   // Sync page - all gears
-  var grs = calcAllGearSync(P);
+  var grs = calcAllGearSync(SP);
   var tMax=-Infinity, tMaxGear=null, gRows='';
   grs.forEach(function(gr){
     var r=gr.res, ok=r.t>=syncTLo&&r.t<=syncTHi, bad=r.t<0;
@@ -4246,7 +4244,7 @@ function sync_compute() {
   var fBase=Math.max(50,SP.F-150), sF='';
   for(var fi=0;fi<=10;fi++){
     var fv=Math.round(fBase+fi*30);
-    var r=calcSync(Object.assign({},P,{F:fv}),wIk,wIk1), ok=r.t>=syncTLo&&r.t<=syncTHi, isCur=fv===SP.F;
+    var r=calcSync(Object.assign({},SP,{F:fv}),wIk,wIk1), ok=r.t>=syncTLo&&r.t<=syncTHi, isCur=fv===SP.F;
     sF+='<tr><td class="'+(isCur?'cur':'')+'">'+fv+'</td>'
       +'<td class="'+(isCur?'cur':'')+'">'+r.Mm.toFixed(3)+'</td>'
       +'<td class="'+(isCur?'cur':ok?'pass':'fail')+'">'+(r.t>=0?r.t.toFixed(3):'N/A')+'</td>'
@@ -4258,7 +4256,7 @@ function sync_compute() {
   var sR='';
   for(var ri=0;ri<=10;ri++){
     var rv=Math.round(Math.max(15,SP.R-25)+ri*5);
-    var r2=calcSync(Object.assign({},P,{R:rv}),wIk,wIk1), ok2=r2.t>=syncTLo&&r2.t<=syncTHi, isCur2=rv===SP.R;
+    var r2=calcSync(Object.assign({},SP,{R:rv}),wIk,wIk1), ok2=r2.t>=syncTLo&&r2.t<=syncTHi, isCur2=rv===SP.R;
     sR+='<tr><td class="'+(isCur2?'cur':'')+'">'+rv+'</td>'
       +'<td class="'+(isCur2?'cur':'')+'">'+r2.Mm.toFixed(3)+'</td>'
       +'<td class="'+(isCur2?'cur':ok2?'pass':'fail')+'">'+(r2.t>=0?r2.t.toFixed(3):'N/A')+'</td>'
@@ -4284,8 +4282,8 @@ function setHTML(id,val){ var el=document.getElementById(id); if(el) el.innerHTM
 
 // ── 汇总报告 ──
 function sync_buildReport() {
-  var lk=calcLock(P);
-  var grs=calcAllGearSync(P), tMax=-Infinity, tMaxGear=null;
+  var lk=calcLock(SP);
+  var grs=calcAllGearSync(SP), tMax=-Infinity, tMaxGear=null;
   grs.forEach(function(gr){ if(!isNaN(gr.res.t)&&gr.res.t>tMax){ tMax=gr.res.t; tMaxGear=gr; } });
   var sy=tMaxGear?tMaxGear.res:{t:-1,Mm:0,dw:0,we:SP.ne*2*Math.PI/60};
 
@@ -4776,6 +4774,7 @@ function downloadScoreReport(){
   a.style.display='none'; document.body.appendChild(a); a.click(); document.body.removeChild(a);
   alert('评分报告已生成！请将TXT文件提交给教师。');
 }
+
 document.addEventListener('contextmenu', e => e.preventDefault());
 document.addEventListener('keydown', e => {
 if (e.key === 'F12' || 
@@ -4786,8 +4785,6 @@ e.preventDefault();
 return false;
 }
 });
-
-
 
 </script>
 
@@ -5239,8 +5236,8 @@ return false;
 </div>
 
 <script>
-  document.addEventListener('contextmenu', e => e.preventDefault());
-  document.addEventListener('keydown', e => {
+document.addEventListener('contextmenu', e => e.preventDefault());
+document.addEventListener('keydown', e => {
     if (e.key === 'F12' || 
         (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) ||
         (e.ctrlKey && e.key === 'U') ||
@@ -5250,7 +5247,6 @@ return false;
     }
   });
 </script>
-
 
 </body>
 </html>
